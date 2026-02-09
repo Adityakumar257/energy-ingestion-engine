@@ -1,47 +1,37 @@
-# High-Scale Energy Ingestion Engine (Node.js + PostgreSQL)
+# High-Scale Energy Ingestion Engine
 
-This project ingests high-frequency telemetry from **Smart Meters (AC)** and **EV/Chargers (DC)**, stores both **historical (cold)** and **current (hot/live)** data, and exposes an analytics API to compute 24-hour performance metrics.
+A backend system to ingest high-frequency telemetry from **EV vehicles (DC)** and **Smart meters (AC)**, store data efficiently, and compute **24-hour performance analytics** at scale.
 
-## ✅ Key Features
-
-- **Polymorphic Ingestion**
-  - Single endpoint can accept **meter** OR **vehicle** payloads.
-- **Hot + Cold Storage Pattern**
-  - **Cold (History):** append-only telemetry tables (INSERT only)
-  - **Hot (Current):** latest state per device (UPSERT)
-- **Batch Ingestion (High Scale)**
-  - `POST /v1/ingest/batch` ingests multiple events in one request
-  - Uses **bulk INSERT/UPSERT**
-  - Uses **transaction** → atomic batch (`atomic:true`)
-- **Analytics**
-  - `GET /v1/analytics/performance/:vehicleId` (last 24 hours)
-  - Uses indexed queries (no full table scan)
+This project is designed keeping **real-world scale (millions of events/day)** in mind.
 
 ---
 
-## 🧠 Why Hot + Cold Tables?
+## 🚀 Features
 
-### Cold Tables (History)
-- Large, append-only tables
-- Used for analytics, audits, trend reporting
-- Never updated
+### ✅ Polymorphic Ingestion
+- Single API supports **vehicle** and **meter** telemetry
+- Auto-detection based on payload structure
 
-### Hot Tables (Current)
-- Only latest state per vehicle/meter
-- Used for dashboards and real-time status
-- Prevents scanning millions of history rows for "current SoC / voltage"
+### ✅ Hot & Cold Data Strategy
+- **Cold tables** (`*_telemetry`)
+  - Append-only
+  - Used for analytics & history
+- **Hot tables** (`*_current`)
+  - Latest state per device
+  - Fast dashboard queries
+
+### ✅ Batch Ingestion (High Scale)
+- `POST /v1/ingest/batch`
+- Bulk INSERT + UPSERT
+- **Transactional (atomic batch)**
+
+### ✅ Analytics API
+- 24-hour rolling window
+- AC vs DC energy comparison
+- Efficiency calculation
+- Indexed queries (no full table scans)
 
 ---
 
-## 📦 Tech Stack
-
-- Node.js (JavaScript)
-- Express.js
-- PostgreSQL (Docker)
-- Zod validation
-- pg (node-postgres)
-
----
-
-## 📁 Folder Structure
+## 🧠 Architecture Overview
 
